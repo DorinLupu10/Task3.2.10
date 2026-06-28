@@ -17,6 +17,7 @@ env:
 
 jobs:
   deploy:
+    name: Deploy frontend
     runs-on: ubuntu-latest
     permissions:
       id-token: write

@@ -16,6 +16,7 @@ env:
 
 jobs:
   deploy:
+    name: Deploy Lambda Functions
     runs-on: ubuntu-latest
     permissions:
       id-token: write
