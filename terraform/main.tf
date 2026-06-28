@@ -25,7 +25,7 @@ module "lambda_create_note" {
 
   function_name = "${var.project_name}-createNote"
   handler       = "app.handler"
-  runtime       = "nodejs24.x"
+  runtime       = "nodejs22.x"
 
   source_path = "../packages/backend/dist/createNote/app.js"
 

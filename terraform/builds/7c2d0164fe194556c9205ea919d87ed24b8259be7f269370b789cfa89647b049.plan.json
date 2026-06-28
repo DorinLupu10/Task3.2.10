@@ -1,0 +1,1 @@
+{"filename": "builds/7c2d0164fe194556c9205ea919d87ed24b8259be7f269370b789cfa89647b049.zip", "runtime": "nodejs24.x", "artifacts_dir": "builds", "build_plan": [[["zip", "../packages/backend/dist/deleteNote/app.js", null]]]}
