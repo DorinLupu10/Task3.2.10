@@ -328,8 +328,10 @@ module "cloudfront" {
 
   ]
 
+  aliases = ["${var.subdomain}.${var.domain_name}"]
+
   viewer_certificate = {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = module.acm.acm_certificate_arn
     minimum_protocol_version       = "TLSv1.2_2021"
     ssl_support_method             = "sni-only"
   } 
