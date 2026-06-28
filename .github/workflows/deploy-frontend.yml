@@ -1,5 +1,3 @@
-name: Deploy Lambda Functions
-
 on:
   push:
     branches:
@@ -9,21 +7,20 @@ on:
       - main
 
     paths:
-      - 'packages/backend/**'
-
+      - 'packages/frontend/**'
 
 env:
   AWS_REGION: us-east-1
 
 jobs:
   deploy:
-    name: Deploy frontend
+    name: Deploy Frontend
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
       pull-requests: read 
-
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,9 +35,9 @@ jobs:
           cd packages/backend
           npm install --legacy-peer-deps
 
-      - name: Build Lambda functions
+      - name: Build frontend
         run: |
-          cd packages/backend
+          cd packages/frontend
           npm run build
 
       - name: Configure AWS credentials via OIDC
@@ -49,21 +46,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy Lambda functions
+      - name: Deploy to S3
         run: |
-          for func in createNote deleteNote getNote listNotes updateNote; do
-            cd packages/backend/dist/$func
-            zip -r ${func}.zip app.js
-            aws lambda update-function-code \
-              --function-name notes-${func} \
-              --zip-file fileb://${func}.zip
-            cd -
-          done
+          aws s3 sync packages/frontend/dist/ s3://notes-frontend-dorin/ --delete
 
-      - name: Verify Lambda deployment
+      - name: Invalidate CloudFront cache
         run: |
-          for func in createNote deleteNote getNote listNotes updateNote; do
-            echo "Checking notes-${func}..."
-            aws lambda get-function --function-name notes-${func} \
-              --query 'Configuration.LastModified' --output text
-          done
+          aws cloudfront create-invalidation \
+            --distribution-id E3O3LGE5I0GU7A \
+            --paths "/*"
