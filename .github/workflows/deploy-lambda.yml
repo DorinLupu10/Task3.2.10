@@ -11,19 +11,16 @@ on:
     paths:
       - 'packages/frontend/**'
 
+env:
+  AWS_REGION: us-east-1
 
 jobs:
-  terraform:
-    name: Terraform Checks
+  deploy:
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
       pull-requests: read 
-
-  env:
-    AWS_REGION: us-east-1
     
   deploy:
     runs-on: ubuntu-latest
