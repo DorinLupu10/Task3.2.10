@@ -43,6 +43,14 @@ module "lambda_create_note" {
     }
   }
 
+  allowed_triggers = {
+    apigateway = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:us-east-1:449024774937:${module.api_gateway.api_id}/*"
+    }
+  }
+  create_current_version_allowed_triggers = false
+
   tags = {
     Project = var.project_name
   }
@@ -71,6 +79,15 @@ module "lambda_delete_note" {
       resources = [module.dynamodb_table.dynamodb_table_arn]
     }
   }
+
+  allowed_triggers = {
+  apigateway = {
+    service    = "apigateway"
+    source_arn = "arn:aws:execute-api:us-east-1:449024774937:${module.api_gateway.api_id}/*"
+  }
+}
+
+create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
@@ -101,6 +118,15 @@ module "lambda_get_note" {
     }
   }
 
+  allowed_triggers = {
+  apigateway = {
+    service    = "apigateway"
+    source_arn = "arn:aws:execute-api:us-east-1:449024774937:${module.api_gateway.api_id}/*"
+  }
+}
+
+create_current_version_allowed_triggers = false
+
   tags = {
     Project = var.project_name
   }
@@ -129,6 +155,15 @@ module "lambda_list_notes" {
       resources = [module.dynamodb_table.dynamodb_table_arn]
     }
   }
+
+  allowed_triggers = {
+  apigateway = {
+    service    = "apigateway"
+    source_arn = "arn:aws:execute-api:us-east-1:449024774937:${module.api_gateway.api_id}/*"
+  }
+}
+
+create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
@@ -159,6 +194,15 @@ module "lambda_update_note" {
     }
   }
 
+  allowed_triggers = {
+  apigateway = {
+    service    = "apigateway"
+    source_arn = "arn:aws:execute-api:us-east-1:449024774937:${module.api_gateway.api_id}/*"
+  }
+}
+
+create_current_version_allowed_triggers = false
+
   tags = {
     Project = var.project_name
   }
@@ -172,7 +216,7 @@ module "api_gateway" {
   description   = "Notes API Gateway"
   protocol_type = "HTTP"
   create_domain_name = false
-  
+
   cors_configuration = {
     allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token"]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
