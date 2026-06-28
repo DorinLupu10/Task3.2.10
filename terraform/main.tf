@@ -342,3 +342,39 @@ module "cloudfront" {
     Project = var.project_name
   }
 }
+
+# ACM Certificate
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "6.3.0"
+
+  domain_name = "${var.subdomain}.${var.domain_name}"
+  zone_id     = data.aws_route53_zone.this.zone_id
+
+  validation_method = "DNS"
+
+  wait_for_validation = true
+
+  tags = {
+    Project = var.project_name
+  }
+}
+
+# Route53 Zone Data
+data "aws_route53_zone" "this" {
+  name         = var.domain_name
+  private_zone = false
+}
+
+# Route53 Record
+resource "aws_route53_record" "this" {
+  zone_id = data.aws_route53_zone.this.zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = module.cloudfront.cloudfront_distribution_domain_name
+    zone_id                = module.cloudfront.cloudfront_distribution_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
