@@ -273,3 +273,43 @@ module "s3_bucket" {
   }
 }
 
+# CloudFront distribution
+module "cloudfront" {
+  source  = "terraform-aws-modules/cloudfront/aws"
+  version = "~> 3.0"
+
+  origin = {
+    s3 = {
+      domain_name           = module.s3_bucket.s3_bucket_bucket_regional_domain_name
+      origin_access_control = "s3"
+    }
+  }
+
+  default_cache_behavior = {
+    target_origin_id       = "s3"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+  }
+
+  custom_error_response = [
+    {
+      error_code            = 403
+      response_code         = 200
+      response_page_path    = "/index.html"
+    },
+    {
+      error_code            = 404
+      response_code         = 200
+      response_page_path    = "/index.html"
+    }
+  ]
+
+  default_root_object = "index.html"
+  enabled             = true
+  price_class         = "PriceClass_100"
+
+  tags = {
+    Project = var.project_name
+  }
+}
