@@ -3,7 +3,11 @@ name: Deploy Lambda Functions
 on:
   push:
     branches:
+      - feature/task3.2.10
+  pull_request:
+    branches:
       - main
+      
     paths:
       - 'packages/backend/**'
 

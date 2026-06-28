@@ -3,10 +3,14 @@ name: Deploy Frontend
 on:
   push:
     branches:
+      - feature/task3.2.10
+  pull_request:
+    branches:
       - main
+      
     paths:
       - 'packages/frontend/**'
-      
+
 env:
   AWS_REGION: us-east-1
 
