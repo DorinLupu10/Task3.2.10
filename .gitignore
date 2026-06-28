@@ -147,3 +147,23 @@ cdk.out
 .pnp.*
 
 .idea
+
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/builds/
+
+# Node
+node_modules/
+packages/frontend/node_modules/
+packages/backend/node_modules/
+
+# Build outputs
+packages/frontend/dist/
+packages/backend/dist/
+
+# Zip files
+*.zip

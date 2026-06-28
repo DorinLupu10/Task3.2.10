@@ -1,0 +1,57 @@
+on:
+  push:
+    branches:
+      - feature/task3.2.10
+  pull_request:
+    branches:
+      - main
+
+    paths:
+      - 'packages/frontend/**'
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read 
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd packages/frontend
+          npm install --legacy-peer-deps --include=dev
+
+      - name: Build frontend
+        run: |
+          cd packages/frontend
+          npm run build
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync packages/frontend/dist/ s3://notes-frontend-dorin/ --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3O3LGE5I0GU7A \
+            --paths "/*"

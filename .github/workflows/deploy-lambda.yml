@@ -1,0 +1,67 @@
+on:
+  push:
+    branches:
+      - feature/task3.2.10
+  pull_request:
+    branches:
+      - main
+
+    paths:
+      - 'packages/backend/**'
+
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Deploy Lambda
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          cd packages/backend
+          npm install --legacy-peer-deps
+
+      - name: Build Lambda functions
+        run: |
+          cd packages/backend
+          npm run build
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Lambda functions
+        run: |
+          for func in createNote deleteNote getNote listNotes updateNote; do
+            cd packages/backend/dist/$func
+            zip -r ${func}.zip app.js
+            aws lambda update-function-code \
+              --function-name notes-${func} \
+              --zip-file fileb://${func}.zip
+            cd -
+          done
+
+      - name: Verify Lambda deployment
+        run: |
+          for func in createNote deleteNote getNote listNotes updateNote; do
+            echo "Checking notes-${func}..."
+            aws lambda get-function --function-name notes-${func} \
+              --query 'Configuration.LastModified' --output text
+          done
