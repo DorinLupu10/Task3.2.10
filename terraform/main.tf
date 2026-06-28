@@ -1,6 +1,6 @@
 module "dynamodb_table" {
   source  = "terraform-aws-modules/dynamodb-table/aws"
-  version = "~> 4.0"
+  version = "~> 5.5.0"
 
   name         = "${var.project_name}-table"
   hash_key     = "noteId"
@@ -210,7 +210,7 @@ create_current_version_allowed_triggers = false
 
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
-  version = "~> 5.0"
+  version = "~> 6.1.0"
 
   name          = "${var.project_name}-api"
   description   = "Notes API Gateway"
@@ -264,7 +264,7 @@ module "api_gateway" {
 # S3 Bucket 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 4.0"
+  version = "~> 5.14.1"
 
   bucket = "${var.project_name}-frontend-dorin"
 
@@ -276,7 +276,7 @@ module "s3_bucket" {
 # CloudFront distribution
 module "cloudfront" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "~> 3.0"
+  version = "~> 6.7.0"
 
   origin = {
     s3 = {
@@ -303,8 +303,15 @@ module "cloudfront" {
       response_code         = 200
       response_page_path    = "/index.html"
     }
+
   ]
 
+  viewer_certificate = {
+    cloudfront_default_certificate = true
+    minimum_protocol_version       = "TLSv1.2_2021"
+    ssl_support_method             = "sni-only"
+  } 
+   
   default_root_object = "index.html"
   enabled             = true
   price_class         = "PriceClass_100"
