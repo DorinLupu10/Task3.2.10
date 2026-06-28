@@ -260,3 +260,16 @@ module "api_gateway" {
     Project = var.project_name
   }
 }
+
+# S3 Bucket 
+module "s3_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 4.0"
+
+  bucket = "${var.project_name}-frontend-dorin"
+
+  tags = {
+    Project = var.project_name
+  }
+}
+
