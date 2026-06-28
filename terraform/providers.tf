@@ -2,7 +2,7 @@ terraform {
 
   backend "s3" {
     bucket = "dorin-terraform-state"
-    key    = "task324/terraform.tfstate"
+    key    = "task3210/terraform.tfstate"
     region = "us-east-1"
   }
   required_providers {

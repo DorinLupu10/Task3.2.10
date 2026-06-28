@@ -18,3 +18,8 @@ variable "my_ip" {
   default     = "89.149.93.193/32"
 }
 
+variable "project_name" {
+  description = "Project name used for naming resources"
+  type        = string
+  default     = "notes"
+}
