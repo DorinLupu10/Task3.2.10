@@ -1,0 +1,1 @@
+{"filename": "builds/19b9745d02e3369ee9f732982b61c6dea99aa5f1ec61104cc48a213711635c41.zip", "runtime": "nodejs22.x", "artifacts_dir": "builds", "build_plan": [[["zip", "../packages/backend/dist/createNote/app.js", null]]]}
