@@ -268,6 +268,27 @@ module "s3_bucket" {
 
   bucket = "${var.project_name}-frontend-dorin"
 
+  attach_policy = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontAccess"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "arn:aws:s3:::${var.project_name}-frontend-dorin/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = module.cloudfront.cloudfront_distribution_arn
+          }
+        }
+      }
+    ]
+  })
+  
   tags = {
     Project = var.project_name
   }
@@ -311,7 +332,7 @@ module "cloudfront" {
     minimum_protocol_version       = "TLSv1.2_2021"
     ssl_support_method             = "sni-only"
   } 
-   
+
   default_root_object = "index.html"
   enabled             = true
   price_class         = "PriceClass_100"
