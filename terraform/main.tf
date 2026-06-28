@@ -171,7 +171,8 @@ module "api_gateway" {
   name          = "${var.project_name}-api"
   description   = "Notes API Gateway"
   protocol_type = "HTTP"
-
+  create_domain_name = false
+  
   cors_configuration = {
     allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token"]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
