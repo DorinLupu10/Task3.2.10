@@ -32,8 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd packages/backend
-          npm install --legacy-peer-deps
+          cd packages/frontend
+          npm install --legacy-peer-deps --include=dev
 
       - name: Build frontend
         run: |
