@@ -54,6 +54,8 @@ module "lambda_create_note" {
   tags = {
     Project = var.project_name
   }
+
+  logging_log_group = "/aws/lambda/${var.environment}-${var.project_name}-createNote"
 }
 
 module "lambda_delete_note" {
@@ -87,11 +89,14 @@ module "lambda_delete_note" {
   }
 }
 
-create_current_version_allowed_triggers = false
+  create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
   }
+  
+  logging_log_group = "/aws/lambda/${var.environment}-${var.project_name}-deleteNote"
+
 }
 
 module "lambda_get_note" {
@@ -125,11 +130,13 @@ module "lambda_get_note" {
   }
 }
 
-create_current_version_allowed_triggers = false
+  create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
   }
+
+  logging_log_group = "/aws/lambda/${var.environment}-${var.project_name}-getNote"
 }
 
 module "lambda_list_notes" {
@@ -163,11 +170,13 @@ module "lambda_list_notes" {
   }
 }
 
-create_current_version_allowed_triggers = false
+  create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
   }
+
+  logging_log_group = "/aws/lambda/${var.environment}-${var.project_name}-listNotes"
 }
 
 module "lambda_update_note" {
@@ -201,11 +210,13 @@ module "lambda_update_note" {
   }
 }
 
-create_current_version_allowed_triggers = false
+  create_current_version_allowed_triggers = false
 
   tags = {
     Project = var.project_name
   }
+
+  logging_log_group =  "/aws/lambda/${var.environment}-${var.project_name}-updateNote"
 }
 
 module "api_gateway" {

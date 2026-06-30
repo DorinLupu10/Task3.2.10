@@ -23,3 +23,9 @@ variable "project_name" {
   type        = string
   default     = "notes"
 }
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "prod"
+}
