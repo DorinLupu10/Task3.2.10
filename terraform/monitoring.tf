@@ -23,6 +23,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "Lambda - Invocations & Errors"
+          region = "us-east-1"
           period = 300
           stat   = "Sum"
           metrics = [
@@ -49,6 +50,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "Lambda - Duration & Throttles"
+          region = "us-east-1"
           period = 300
           stat   = "Average"
           metrics = [
@@ -72,6 +74,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "Lambda - Concurrent Executions"
+          region = "us-east-1"
           period = 300
           stat   = "Maximum"
           metrics = [
@@ -93,6 +96,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "API Gateway - Requests & Errors"
+          region = "us-east-1"
           period = 300
           stat   = "Sum"
           metrics = [
@@ -113,6 +117,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "API Gateway - Latency"
+          region = "us-east-1"
           period = 300
           stat   = "Average"
           metrics = [
@@ -131,6 +136,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           title  = "DynamoDB - Capacity & Latency"
+          region = "us-east-1"
           period = 300
           stat   = "Sum"
           metrics = [
