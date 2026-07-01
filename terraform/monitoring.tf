@@ -332,3 +332,23 @@ resource "aws_cloudwatch_metric_alarm" "dynamodb_write_throttle" {
     Environment = var.environment
   }
 }
+
+locals {
+  lambda_functions = ["createNote", "deleteNote", "getNote", "listNotes", "updateNote"]
+}
+
+module "metric_filter_memory" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
+  version = "~> 5.0"
+
+  for_each = toset(local.lambda_functions)
+
+  log_group_name = "/aws/lambda/${var.environment}-${var.project_name}-${each.key}"
+
+  name    = "${var.environment}-${var.project_name}-${each.key}-MaxMemoryUsedMB"
+  pattern = "[report_name=\"REPORT\", request_id_name=\"RequestId:\", request_id_value, duration_name=\"Duration:\", duration_value, duration_unit=\"ms,\", billed_duration_name=\"Billed\", billed_duration_name2=\"Duration:\", billed_duration_value, billed_duration_unit=\"ms,\", memory_size_name=\"Memory\", memory_size_name2=\"Size:\", memory_size_value, memory_size_unit=\"MB,\", max_memory_name=\"Max\", max_memory_name2=\"Memory\", max_memory_name3=\"Used:\", max_memory_value, max_memory_unit=\"MB\"]"
+
+  metric_transformation_namespace = "Custom/Lambda"
+  metric_transformation_name      = "${var.environment}-${var.project_name}-${each.key}-MaxMemoryUsedMB"
+  metric_transformation_value     = "$max_memory_value"
+}
