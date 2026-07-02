@@ -147,7 +147,73 @@ resource "aws_cloudwatch_dashboard" "main" {
           ]
           view = "timeSeries"
         }
+      },
+
+      # new Widget
+      {
+        type   = "metric"
+        x      = 0
+        y      = 18
+        width  = 12
+        height = 6
+        properties = {
+          title   = "Lambda - Memory Usage (MB)"
+          region  = "us-east-1"
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["Custom/Lambda", "prod-notes-createNote-MaxMemoryUsedMB"],
+            ["Custom/Lambda", "prod-notes-deleteNote-MaxMemoryUsedMB"],
+            ["Custom/Lambda", "prod-notes-getNote-MaxMemoryUsedMB"],
+            ["Custom/Lambda", "prod-notes-listNotes-MaxMemoryUsedMB"],
+            ["Custom/Lambda", "prod-notes-updateNote-MaxMemoryUsedMB"]
+          ]
+          view = "timeSeries"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 18
+        width  = 12
+        height = 6
+        properties = {
+          title   = "Lambda - Billed Duration (ms)"
+          region  = "us-east-1"
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["Custom/Lambda", "prod-notes-createNote-BilledDuration"],
+            ["Custom/Lambda", "prod-notes-deleteNote-BilledDuration"],
+            ["Custom/Lambda", "prod-notes-getNote-BilledDuration"],
+            ["Custom/Lambda", "prod-notes-listNotes-BilledDuration"],
+            ["Custom/Lambda", "prod-notes-updateNote-BilledDuration"]
+          ]
+          view = "timeSeries"
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 24
+        width  = 12
+        height = 6
+        properties = {
+          title   = "Lambda - Cold Start Duration (ms)"
+          region  = "us-east-1"
+          period  = 300
+          stat    = "Average"
+          metrics = [
+            ["Custom/Lambda", "prod-notes-createNote-ColdStartDuration"],
+            ["Custom/Lambda", "prod-notes-deleteNote-ColdStartDuration"],
+            ["Custom/Lambda", "prod-notes-getNote-ColdStartDuration"],
+            ["Custom/Lambda", "prod-notes-listNotes-ColdStartDuration"],
+            ["Custom/Lambda", "prod-notes-updateNote-ColdStartDuration"]
+          ]
+          view = "timeSeries"
+        }
       }
+
     ]
   })
 }
@@ -346,9 +412,40 @@ module "metric_filter_memory" {
   log_group_name = "/aws/lambda/${var.environment}-${var.project_name}-${each.key}"
 
   name    = "${var.environment}-${var.project_name}-${each.key}-MaxMemoryUsedMB"
-  pattern = "[report_name=\"REPORT\", request_id_name=\"RequestId:\", request_id_value, duration_name=\"Duration:\", duration_value, duration_unit=\"ms,\", billed_duration_name=\"Billed\", billed_duration_name2=\"Duration:\", billed_duration_value, billed_duration_unit=\"ms,\", memory_size_name=\"Memory\", memory_size_name2=\"Size:\", memory_size_value, memory_size_unit=\"MB,\", max_memory_name=\"Max\", max_memory_name2=\"Memory\", max_memory_name3=\"Used:\", max_memory_value, max_memory_unit=\"MB\"]"
-
+  pattern = "[report_name=\"REPORT\", request_id_name, request_id_value, duration_name, duration_value, duration_unit, billed_duration_name, billed_duration_name2, billed_duration_value, billed_duration_unit, memory_size_name, memory_size_name2, memory_size_value, memory_size_unit, max_memory_name, max_memory_name2, max_memory_name3, max_memory_value, max_memory_unit]"
   metric_transformation_namespace = "Custom/Lambda"
   metric_transformation_name      = "${var.environment}-${var.project_name}-${each.key}-MaxMemoryUsedMB"
   metric_transformation_value     = "$max_memory_value"
+}
+
+module "metric_filter_billed_duration" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
+  version = "~> 5.0"
+
+  for_each = toset(local.lambda_functions)
+
+  log_group_name = "/aws/lambda/${var.environment}-${var.project_name}-${each.key}"
+
+  name    = "${var.environment}-${var.project_name}-${each.key}-BilledDuration"
+  pattern = "[report_name=\"REPORT\", request_id_name, request_id_value, duration_name, duration_value, duration_unit, billed_duration_name, billed_duration_name2, billed_duration_value, billed_duration_unit, memory_size_name, memory_size_name2, memory_size_value, memory_size_unit, max_memory_name, max_memory_name2, max_memory_name3, max_memory_value, max_memory_unit]"
+  
+  metric_transformation_namespace = "Custom/Lambda"
+  metric_transformation_name      = "${var.environment}-${var.project_name}-${each.key}-BilledDuration"
+  metric_transformation_value     = "$billed_duration_value"
+}
+
+module "metric_filter_cold_starts" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-metric-filter"
+  version = "~> 5.0"
+
+  for_each = toset(local.lambda_functions)
+
+  log_group_name = "/aws/lambda/${var.environment}-${var.project_name}-${each.key}"
+
+  name    = "${var.environment}-${var.project_name}-${each.key}-ColdStarts"
+  pattern = "[report_name=\"REPORT\", request_id_name, request_id_value, duration_name, duration_value, duration_unit, billed_duration_name, billed_duration_name2, billed_duration_value, billed_duration_unit, memory_size_name, memory_size_name2, memory_size_value, memory_size_unit, max_memory_name, max_memory_name2, max_memory_name3, max_memory_value, max_memory_unit, init_duration_name, init_duration_name2, init_duration_value, init_duration_unit]"
+  
+  metric_transformation_namespace = "Custom/Lambda"
+  metric_transformation_name      = "${var.environment}-${var.project_name}-${each.key}-ColdStartDuration"
+  metric_transformation_value     = "$init_duration_value"
 }
